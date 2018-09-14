@@ -1,5 +1,4 @@
 import bs4 as bs
-import codecs
 import sys
 from urllib.request import urlopen, Request
 from unidecode import unidecode
