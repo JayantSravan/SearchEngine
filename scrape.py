@@ -27,4 +27,5 @@ for div in body.find_all('div', class_='postbody'):
         para = para.decode("utf-8", "ignore")
         para = para + '\n'
         f.write(para)
+
 f.close()
