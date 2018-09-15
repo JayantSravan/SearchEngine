@@ -19,17 +19,17 @@ class Preprocessor:
             f = open(fileDir, "r")
 
             txt = f.read()
-            txt = txt.decode('utf-8')
-            txt = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]', '',txt)	# removes escape characters using regex
-            txt = txt.encode('ascii','ignore') #removes unicode characters like \u0097 and type(txt) is bytes
-            txt = txt.split()
-            temp = []
-            for text in txt:
-                try:
-                    temp.append(text.decode('unicode_escape')) # conversion to desired string
-                except:
-                    pass
-                txt = ' '.join(newTxt)
+            #txt = txt.decode('utf-8')
+            #txt = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]', '',txt)	# removes escape characters using regex
+            #txt = txt.encode('ascii','ignore') #removes unicode characters like \u0097 and type(txt) is bytes
+            #txt = txt.split()
+            #temp = []
+            #for text in txt:
+            #    try:
+            #        temp.append(text.decode('unicode_escape')) # conversion to desired string
+            #    except:
+            #        pass
+            #    txt = ' '.join(newTxt)
             f.close()
         except:
             txt = "Something wrong in extracting text"
@@ -60,51 +60,62 @@ class Preprocessor:
         try:
             self.fileNum_to_file[fileNum] = fileDir #associating file to a file number
 
+            #print('entering' + fileDir)
             data = self.extractText(fileDir) #getting text from file
+            #print('extracted' + fileDir)
             tokens = self.tokenize(data) #tokenizing
+            #print('tokenized' + fileDir)
             tokens = self.lemmatize(tokens) #lemmatizing
-
+            #print('lemmatized' + fileDir)
+            #print(tokens)
             self.fileLengths = len(tokens) #storing file lengths
 
             fileWordsCount = {} #to store the count of each word in this file
 
+            #print('About to iterate tokens and count')
             for token in tokens: #increment the count of the token
-                if token not in fileWords:
+                if token not in fileWordsCount:
                     fileWordsCount[token] = 1
                 else:
-                    fileWordsCount[token] += 1
+                    fileWordsCount[token] = fileWordsCount[token] + 1
 
+            #print('Successfully taken the count of tokens')
             self.TFVectors[fileNum] = fileWordsCount #associating the word counts of this file to the file number
 
             setOfWordsInFile = list(set(tokens)) #getting a list of distinct words using set function
-
+            #print('Successfully taken distinct tokens')
             for word in setOfWordsInFile: #incrementing document frequency
                 if word not in self.IDFVector:
+                    #print(IDFVector[word])
                     self.distinctWords.append(word)
-                    IDFVector[word] = 1
+                    #print('Iterating1 ' + word)
+                    self.IDFVector[word] = 1
                 else:
-                    IDFVector[word] += 1
-
+                    #print('Iterating2 ' + word)
+                    self.IDFVector[word] += 1
+            #print('Successfully taken IDF')
             for word in setOfWordsInFile: #storing the document numbers of the files where the word appeared
                 if word not in self.wordAppearancesInFiles:
                     self.wordAppearancesInFiles[word] = [fileNum]
                 else:
                     self.wordAppearancesInFiles[word].append(fileNum)
-
+            #print('Successfully taken Appearanes')
         except:
             print('issue in computing TF and IDF values', fileNum, ' - ', fileDir)
 
     def make_TF_IDF_vector(self, numOfFiles): #TF_IDF vector would be of the form [word][fileNum].
         for word in self.distinctWords: #iterate over all the words in the entire dataset
             term_TF_IDF = {}
-            for fileNum in self.wordAppearancesinFiles[word]: #iterate over those files in whom this word is present
+            for fileNum in self.wordAppearancesInFiles[word]: #iterate over those files in whom this word is present
                 try:
-                    term_TF_IDF[fileNum] = (1+math.log10(self.TFVectors[fileNum][word]))*(math.log10(numOfFiles/IDFVector[word]))
+                    #print(self.IDFVector[word])
+                    term_TF_IDF[fileNum] = (1.0 + math.log10(self.TFVectors[fileNum][word])) * (math.log10(numOfFiles/self.IDFVector[word]))
+                    #print(term_TF_IDF[fileNum])
                 except:
                     print('Problem while making the TF_IDF vector')
             self.TF_IDF_vector[word] = term_TF_IDF
         return self.TF_IDF_vector
 
 #just a demo script. Remove before the final release
-p = Preprocessor()
-print(p.stem(p.tokenize('Hey, this is a trial string. Let us see what happens')))
+#p = Preprocessor()
+#print(p.stem(p.tokenize('Hey, this is a trial string. Let us see what happens')))
