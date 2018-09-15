@@ -103,7 +103,7 @@ class Preprocessor:
                 except:
                     print('Problem while making the TF_IDF vector')
             self.TF_IDF_vector[word] = term_TF_IDF
-
+        return self.TF_IDF_vector
 
 #just a demo script. Remove before the final release
 p = Preprocessor()
