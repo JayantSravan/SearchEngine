@@ -20,7 +20,6 @@ class Query:
                 if word in TF_IDF_vector and file_iter in TF_IDF_vector[word]:
                     rating +=TF_IDF_vector[word][file_iter] #adding the TF-IDF values for common words from the vector
             self.results.append( (rating, file_iter) ) #tuple
-
         self.results = sorted(self.results, reverse = True) #sort tuple
 
         return self.results
