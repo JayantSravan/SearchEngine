@@ -9,8 +9,8 @@ class Query:
 
     def process_query(self):
         tokens = self.preprocessor.tokenize(self.query) #tokenize
-        self.all_words = self.preprocessor.lemmatize(tokens) #lemmatize
-
+        tokens = self.preprocessor.lemmatize(tokens) #lemmatize
+        self.all_words = self.preprocessor.get_n_grams(tokens) #get n grams
 
     def compute_results(self, numOfFiles, TF_IDF_vector):
         self.results = []

@@ -3,6 +3,7 @@ import os.path
 from os import path
 from Helpers import Preprocessor, Query
 import json, pickle
+import time
 directory = 'data'
 
 if not(os.path.exists(directory)):
@@ -19,6 +20,7 @@ if os.path.exists(directory + '/preprocessed.pickle'): #check if the previously 
     pickle_in.close()
 
 else: #if it doesnt exist generate it
+    start = time.time()
     print('Generating tf-idf vectors in: ')
     i = 0
     for filename in os.listdir(directory): #iterating through the data directory and retrieving everything
@@ -31,8 +33,10 @@ else: #if it doesnt exist generate it
                     preP.compute_TFIDF_values(directory + '/' + filename + '/' + file, i)
                     i = i+1
     preP.make_TF_IDF_vector(i)
+    end = time.time()
     pickle_out = open(directory + "/preprocessed.pickle", "wb")
     pickle.dump(preP, pickle_out)
+    print('Took ' + str(end-start) + ' seconds to generate tf-idf tags. Pickling it.')
     pickle_out.close()
 
 while True: #take queries continuously
