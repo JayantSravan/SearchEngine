@@ -1,6 +1,9 @@
 from Helpers.Preprocessor import Preprocessor
 
 class Query:
+    '''
+    A query class has methods required to handle a query. It uses the preprocessor class
+    '''
     def __init__(self, str):
         self.preprocessor = Preprocessor() #to process the query to tokens
         self.all_words = [] #all words in the query (lemmatized)
@@ -8,11 +11,21 @@ class Query:
         self.query = str #query string
 
     def process_query(self):
+        '''
+        Tokenize, lemmatize and get n-grams for a query
+        :return:
+        '''
         tokens = self.preprocessor.tokenize(self.query) #tokenize
         tokens = self.preprocessor.lemmatize(tokens) #lemmatize
         self.all_words = self.preprocessor.get_n_grams(tokens) #get n grams
 
     def compute_results(self, numOfFiles, TF_IDF_vector):
+        '''
+        Compute the top matches for a particular query
+        :param numOfFiles: total number of files in data
+        :param TF_IDF_vector: tf-idf vector after n-gram model
+        :return: the sorted list of matches
+        '''
         self.results = []
         for file_iter in range(numOfFiles):
             rating = 0.0
