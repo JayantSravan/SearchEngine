@@ -3,7 +3,7 @@ from os import path
 from Helpers import Preprocessor, Query
 import pickle
 import time
-directory = 'data'
+directory = 'data' 
 
 if not(os.path.exists(directory)):
 <<<<<<< HEAD
