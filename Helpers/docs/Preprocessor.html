@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>Preprocessor.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>Preprocessor.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nltk</span> <span class="kn">import</span> <span class="n">word_tokenize</span><span class="p">,</span> <span class="n">ngrams</span>
+<span class="kn">from</span> <span class="nn">nltk.stem</span> <span class="kn">import</span> <span class="n">PorterStemmer</span><span class="p">,</span> <span class="n">WordNetLemmatizer</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">stopwords</span>
+<span class="kn">import</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">math</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Preprocessor provides with necessary tools like text extraction,tokenization, stemming, lemmatization, tf-idf extraction,etc
+It stores the final tf-idf vector</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Preprocessor</span><span class="p">:</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Initializing variables to be used later</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">TFVectors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">IDFVector</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileNum_to_file</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileLengths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wordAppearancesInFiles</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distinctWords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TF_IDF_vector</span> <span class="o">=</span> <span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Read a file and convert the content into a string
+:param fileDir: file&rsquo;s path
+:return: a string containing the content</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">extractText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fileDir</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fileDir</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+            <span class="n">txt</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;Something wrong in extracting text&quot;</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">txt</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>Uses nltk to tokenize a string
+:param str: string to be tokenized
+:return: a list of tokens</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">tokens</span> <span class="o">=</span> <span class="n">word_tokenize</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="c1">#convert the string into a list of tokens based on &#39; &#39; delimiter and other methods used by nltk</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">]</span> <span class="c1">#remove all the tokens which belong to punctuation</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#remove all the words whose length is not more than 1</span>
+        <span class="k">return</span> <span class="n">tokens</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Uses nltk to stem tokens
+:param tokens: list of strings to be stemmed
+:return: a list of stemmed tokens</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">stem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">stemmedWords</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#defined an empty list to append the stemmed tokens</span>
+        <span class="n">stemmerMechanism</span> <span class="o">=</span> <span class="n">PorterStemmer</span><span class="p">()</span> <span class="c1">#get a porter stemmer</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="n">stemmedWords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stemmerMechanism</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="c1">#append stemmed tokens to the list</span>
+        <span class="k">return</span> <span class="n">stemmedWords</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>Gets n_grams upto size 2
+:param tokens: tokens to which n grams have to be generated
+:return: a list of n-grams</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">get_n_grams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">unigram</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">ngrams</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="n">bigram</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">ngrams</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">unigram</span> <span class="o">+</span> <span class="n">bigram</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>Use lemmatizer or the stemmer, not both. Using this would be preferred for better results.
+:param tokens: A list of tokens to be lemmatized
+:return: lemmatized tokens</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">lemmatize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="n">lemmatizedWords</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">#defined an empty list to append the lemmatized tokens</span>
+        <span class="n">lemmatizer</span> <span class="o">=</span> <span class="n">WordNetLemmatizer</span><span class="p">()</span> <span class="c1">#get a Word Net Lemmatizer</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="n">lemmatizedWords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lemmatizer</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="c1">#append lemmatized tokens to the list</span>
+        <span class="k">return</span> <span class="n">lemmatizedWords</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>Computing tf-idf values for a file
+:param fileDir: path of the file
+:param fileNum: file num of the file
+:return:</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">compute_TFIDF_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fileDir</span><span class="p">,</span> <span class="n">fileNum</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileNum_to_file</span><span class="p">[</span><span class="n">fileNum</span><span class="p">]</span> <span class="o">=</span> <span class="n">fileDir</span> <span class="c1">#associating file to a file number</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extractText</span><span class="p">(</span><span class="n">fileDir</span><span class="p">)</span> <span class="c1">#getting text from file</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1">#tokenizing</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="c1">#lemmatizing</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_n_grams</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="c1">#get n grams</span>
+
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">fileLengths</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="c1">#storing file lengths</span>
+
+            <span class="n">fileWordsCount</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1">#to store the count of each word in this file</span>
+
+            <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span> <span class="c1">#increment the count of the token</span>
+                <span class="k">if</span> <span class="n">token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fileWordsCount</span><span class="p">:</span>
+                    <span class="n">fileWordsCount</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">fileWordsCount</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="o">=</span> <span class="n">fileWordsCount</span><span class="p">[</span><span class="n">token</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">TFVectors</span><span class="p">[</span><span class="n">fileNum</span><span class="p">]</span> <span class="o">=</span> <span class="n">fileWordsCount</span> <span class="c1">#associating the word counts of this file to the file number</span>
+
+            <span class="n">setOfWordsInFile</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">tokens</span><span class="p">))</span> <span class="c1">#getting a list of distinct words using set function</span>
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">setOfWordsInFile</span><span class="p">:</span> <span class="c1">#incrementing document frequency</span>
+                <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">IDFVector</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">distinctWords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IDFVector</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IDFVector</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">setOfWordsInFile</span><span class="p">:</span> <span class="c1">#storing the document numbers of the files where the word appeared</span>
+                <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wordAppearancesInFiles</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">wordAppearancesInFiles</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">fileNum</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">wordAppearancesInFiles</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileNum</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;issue in computing TF and IDF values&#39;</span><span class="p">,</span> <span class="n">fileNum</span><span class="p">,</span> <span class="s1">&#39; - &#39;</span><span class="p">,</span> <span class="n">fileDir</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>Get a vector tf-idf for all the files
+TF_IDF vector would be of the form [word][fileNum] dictionary.
+:param numOfFiles: total number of files
+:return: a tf-idf vector</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="k">def</span> <span class="nf">make_TF_IDF_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numOfFiles</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>        <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">distinctWords</span><span class="p">:</span> <span class="c1">#iterate over all the words in the entire dataset</span>
+            <span class="n">term_TF_IDF</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">fileNum</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">wordAppearancesInFiles</span><span class="p">[</span><span class="n">word</span><span class="p">]:</span> <span class="c1">#iterate over those files in whom this word is present</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">term_TF_IDF</span><span class="p">[</span><span class="n">fileNum</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">TFVectors</span><span class="p">[</span><span class="n">fileNum</span><span class="p">][</span><span class="n">word</span><span class="p">]))</span> <span class="o">*</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">numOfFiles</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">IDFVector</span><span class="p">[</span><span class="n">word</span><span class="p">]))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Problem while making the TF_IDF vector&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">TF_IDF_vector</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="n">term_TF_IDF</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">TF_IDF_vector</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>just a demo script. Remove before the final release
+p = Preprocessor()
+print(p.get_n_grams(p.stem(p.tokenize(&lsquo;Hey, this is a trial string. Let us see what happens&rsquo;))))</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
