@@ -6,9 +6,15 @@ import time
 directory = 'data'
 
 if not(os.path.exists(directory)):
+<<<<<<< HEAD
     """
     Checking if there exists a data directory. If no data, program quits.
     """
+=======
+    '''
+    Checking if there exists a data directory. If no data, program quits.
+    '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
     print('Data unavailable. Get the data using parsern file in helpers folder. Quitting now.')
     quit()
 
@@ -16,9 +22,15 @@ preP = Preprocessor.Preprocessor()  # creating a preprocessor file which contain
 
 
 if os.path.exists(directory + '/preprocessed.pickle'):  # check if the previously pickled file exists
+<<<<<<< HEAD
     """
     We need to pickle the object. If pickle exists, no need to compute again
     """
+=======
+    '''
+    We need to pickle the object. If pickle exists, no need to compute again
+    '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
     print('Preprocessed object exists. Parsing it.')
     pickle_in = open(directory + "/preprocessed.pickle", "rb")
     preP = pickle.load(pickle_in)

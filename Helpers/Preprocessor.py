@@ -4,6 +4,7 @@ from nltk.corpus import stopwords
 import string, math
 
 class Preprocessor:
+<<<<<<< HEAD
     """
     Preprocessor provides with necessary tools like text extraction,tokenization, stemming, lemmatization, tf-idf extraction,etc
     It stores the final tf-idf vector
@@ -12,6 +13,16 @@ class Preprocessor:
         """
         Initializing variables to be used later
         """
+=======
+    '''
+    Preprocessor provides with necessary tools like text extraction,tokenization, stemming, lemmatization, tf-idf extraction,etc
+    It stores the final tf-idf vector
+    '''
+    def __init__(self):
+        '''
+        Initializing variables to be used later
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         self.TFVectors = {}
         self.IDFVector = {}
         self.fileNum_to_file = {}
@@ -21,11 +32,19 @@ class Preprocessor:
         self.TF_IDF_vector = {}
 
     def extractText(self, fileDir):
+<<<<<<< HEAD
         """
         Read a file and convert the content into a string
         :param fileDir: file's path
         :return: a string containing the content
         """
+=======
+        '''
+        Read a file and convert the content into a string
+        :param fileDir: file's path
+        :return: a string containing the content
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         try:
             f = open(fileDir, "r")
 
@@ -37,22 +56,38 @@ class Preprocessor:
         return txt
 
     def tokenize(self, str):
+<<<<<<< HEAD
         """
         Uses nltk to tokenize a string
         :param str: string to be tokenized
         :return: a list of tokens
         """
+=======
+        '''
+        Uses nltk to tokenize a string
+        :param str: string to be tokenized
+        :return: a list of tokens
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         tokens = word_tokenize(str) #convert the string into a list of tokens based on ' ' delimiter and other methods used by nltk
         tokens = [i for i in tokens if i not in string.punctuation] #remove all the tokens which belong to punctuation
         tokens = [i for i in tokens if len(i)>1] #remove all the words whose length is not more than 1
         return tokens
 
     def stem(self, tokens):
+<<<<<<< HEAD
         """
         Uses nltk to stem tokens
         :param tokens: list of strings to be stemmed
         :return: a list of stemmed tokens
         """
+=======
+        '''
+        Uses nltk to stem tokens
+        :param tokens: list of strings to be stemmed
+        :return: a list of stemmed tokens
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         stemmedWords = [] #defined an empty list to append the stemmed tokens
         stemmerMechanism = PorterStemmer() #get a porter stemmer
         for i in tokens:
@@ -60,21 +95,37 @@ class Preprocessor:
         return stemmedWords
 
     def get_n_grams(self, tokens):
+<<<<<<< HEAD
         """
         Gets n_grams upto size 2
         :param tokens: tokens to which n grams have to be generated
         :return: a list of n-grams
         """
+=======
+        '''
+        Gets n_grams upto size 2
+        :param tokens: tokens to which n grams have to be generated
+        :return: a list of n-grams
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         unigram = [' '.join(word) for word in ngrams(tokens,1)]
         bigram = [' '.join(word) for word in ngrams(tokens,2)]
         return unigram + bigram
 
     def lemmatize(self, tokens):
+<<<<<<< HEAD
         """
         Use lemmatizer or the stemmer, not both. Using this would be preferred for better results.
         :param tokens: A list of tokens to be lemmatized
         :return: lemmatized tokens
         """
+=======
+        '''
+        Use lemmatizer or the stemmer, not both. Using this would be preferred for better results.
+        :param tokens: A list of tokens to be lemmatized
+        :return: lemmatized tokens
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         lemmatizedWords = [] #defined an empty list to append the lemmatized tokens
         lemmatizer = WordNetLemmatizer() #get a Word Net Lemmatizer
         for i in tokens:
@@ -82,12 +133,20 @@ class Preprocessor:
         return lemmatizedWords
 
     def compute_TFIDF_values(self, fileDir, fileNum):
+<<<<<<< HEAD
         """
+=======
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         Computing tf-idf values for a file
         :param fileDir: path of the file
         :param fileNum: file num of the file
         :return:
+<<<<<<< HEAD
         """
+=======
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         try:
             self.fileNum_to_file[fileNum] = fileDir #associating file to a file number
 
@@ -125,12 +184,20 @@ class Preprocessor:
             print('issue in computing TF and IDF values', fileNum, ' - ', fileDir)
 
     def make_TF_IDF_vector(self, numOfFiles):
+<<<<<<< HEAD
         """
+=======
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         Get a vector tf-idf for all the files
         TF_IDF vector would be of the form [word][fileNum] dictionary.
         :param numOfFiles: total number of files
         :return: a tf-idf vector
+<<<<<<< HEAD
         """
+=======
+        '''
+>>>>>>> eee7e39e2c0f24970eb4d6a76a00983d028e4259
         for word in self.distinctWords: #iterate over all the words in the entire dataset
             term_TF_IDF = {}
             for fileNum in self.wordAppearancesInFiles[word]: #iterate over those files in whom this word is present
